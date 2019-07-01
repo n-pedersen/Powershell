@@ -36,9 +36,9 @@ try
         $i++
 
 	    $imageFileName = ($imageURL.split("/"))[-1]
-	    echo ([string]"$i Downloading image $imageFileName" + "      $imageURL" )
+	    echo ([string]"$i Downloading image $imageFileName" + "      $imageURL" ) | Out-null
 
-	    Invoke-WebRequest -Uri $imageURL -OutFile "$destinationPath\$imageFileName"
+	    Invoke-WebRequest -Uri $imageURL -OutFile "$destinationPath\$imageFileName" | Out-null
     }
 
     [array]$PictureArray = Get-ChildItem -Path $destinationPath | Select-Object -ExpandProperty FullName
