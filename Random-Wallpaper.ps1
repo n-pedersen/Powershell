@@ -1,4 +1,4 @@
-﻿#Clear-Host
+
 $script:ErrorActionPreference = 'Ignore'
 $script:ProgressPreference = 'SilentlyContinue'
 
