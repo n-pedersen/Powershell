@@ -22,13 +22,14 @@ function set-wallPaper ([string]$desktopImagePath)
 
 try
 {
-    $destinationPath = "C:\Temp\HoffPictures"
-    mkdir "C:\Temp\" -ErrorAction SilentlyContinue | Out-Null
-    mkdir $destinationPath -ErrorAction SilentlyContinue | Out-Null
+
 
     $subreddit = "DavidHasselhoff"
     $Pictures = Invoke-RestMethod "https://www.reddit.com/r/$subreddit/hot/.json" -Method Get -Body @{limit="100"} | %{$_.data.children.data.url} | ?{ $_ -match "\.jp?g$" }
-    $Pictures.Count
+    #$Pictures.Count
+    
+    $destinationPath = "$env:TEMP\$subreddit-Pictures"
+    mkdir $destinationPath -ErrorAction SilentlyContinue | Out-Null
 
     [int]$i = 0
     foreach($imageURL in $Pictures)
