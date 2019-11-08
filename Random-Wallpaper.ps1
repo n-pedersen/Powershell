@@ -1,4 +1,5 @@
 
+
 $script:ErrorActionPreference = 'Ignore'
 $script:ProgressPreference = 'SilentlyContinue'
 
@@ -28,8 +29,8 @@ try
     $Pictures = Invoke-RestMethod "https://www.reddit.com/r/$subreddit/hot/.json" -Method Get -Body @{limit="100"} | %{$_.data.children.data.url} | ?{ $_ -match "\.jp?g$" }
     #$Pictures.Count
     
-    $destinationPath = "$env:TEMP\$subreddit-Pictures"
-    mkdir $destinationPath -ErrorAction SilentlyContinue | Out-Null
+    $destinationFolderPath = "$env:TEMP\$subreddit-Pictures"
+    mkdir $destinationFolderPath -ErrorAction SilentlyContinue | Out-Null
 
     [int]$i = 0
     foreach($imageURL in $Pictures)
@@ -39,14 +40,36 @@ try
 	    $imageFileName = ($imageURL.split("/"))[-1]
 	    echo ([string]"$i Downloading image $imageFileName" + "      $imageURL" ) | Out-null
 
-	    Invoke-WebRequest -Uri $imageURL -OutFile "$destinationPath\$imageFileName" | Out-null
+	    Invoke-WebRequest -Uri $imageURL -OutFile "$destinationFolderPath\$imageFileName" | Out-null
     }
 
-    [array]$PictureArray = Get-ChildItem -Path $destinationPath | Select-Object -ExpandProperty FullName
+    [array]$PictureArray = Get-ChildItem -Path $destinationFolderPath | Select-Object -ExpandProperty FullName
     [int]$RandomPictureNo = (Get-Random -Minimum 0 -Maximum ($PictureArray.Count) )
     $RandomPicturePath = $PictureArray[$RandomPictureNo]
 
     Set-Wallpaper -desktopImagePath $RandomPicturePath
+
+
+    #cursor
+    $destinationFolderPath 
+    $RegConnect = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey([Microsoft.Win32.RegistryHive]”CurrentUser”,”$env:COMPUTERNAME”)
+
+    $cursorFileName = "thehoff.cur"
+    $cursorPath = "$destinationFolderPath\$cursorFileName"
+    Invoke-WebRequest -Uri "http://cur.cursors-4u.net/toons/too-6/too529.cur" -OutFile $cursorPath
+
+
+    $RegCursors = $RegConnect.OpenSubKey(“Control Panel\Cursors”,$true)
+
+    $RegCursors.SetValue(“Arrow”,$cursorPath)
+
+    $RegCursors.SetValue(“Crosshair”,$cursorPath)
+
+    $RegCursors.SetValue(“Hand”,$cursorPath)
+
+    $RegCursors.Close()
+
+    $RegConnect.Close()
 
 
 }
